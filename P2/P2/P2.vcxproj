@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="..\..\funcHDR.cu" />
+    <CudaCompile Include="..\..\tonemapping.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\loadSaveImage.cpp" />
@@ -27,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\loadSaveImage.h" />
+    <ClInclude Include="..\..\timer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F1CBD6CE-8B2B-4E2F-A44F-DDA6D6CD6276}</ProjectGuid>

@@ -91,5 +91,6 @@ int main(int argc, char **argv) {
 
   cleanupGlobalMemory();
 
+  system("pause");
   return 0;
 }

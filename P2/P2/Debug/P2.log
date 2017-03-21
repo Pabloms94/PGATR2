@@ -1,34 +1,31 @@
-﻿Compilación iniciada a las 21/03/2017 22:58:55.
+﻿Compilación iniciada a las 21/03/2017 23:35:29.
      1>Proyecto "C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\P2\P2\P2.vcxproj" en el nodo 2 (Build destinos).
-     1>AddCudaCompileDeps:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\cl.exe /E /nologo /showIncludes /TP /D__CUDACC__ /DWIN32 /D_DEBUG /D_CONSOLE /D_MBCS /IC:\opencv\build\x86\vc12\..\..\include /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin" /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" /I. /FIcuda_runtime.h /c C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\funcHDR.cu 
      1>El proyecto "C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\P2\P2\P2.vcxproj" (1) está compilando "C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\P2\P2\P2.vcxproj" (1:2) en el nodo 2 (CudaBuildCore destinos).
      1>CudaBuildCore:
          Compiling CUDA source file ..\..\funcHDR.cu...
-         cmd.exe /C "C:\Users\Pablo\AppData\Local\Temp\tmp9370703ca0b4437e9ddcc82790c40a62.cmd"
+         cmd.exe /C "C:\Users\Pablo\AppData\Local\Temp\tmp765bc13e34864711b4242854a2f74601.cmd"
          "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\nvcc.exe" -gencode=arch=compute_20,code=\"sm_20,compute_20\" --use-local-env --cl-version 2013 -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin"  -IC:\opencv\build\x86\vc12\..\..\include -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile -cudart static  -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MDd " -o Debug\funcHDR.cu.obj "C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\funcHDR.cu"
          
          C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\P2\P2>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\nvcc.exe" -gencode=arch=compute_20,code=\"sm_20,compute_20\" --use-local-env --cl-version 2013 -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin"  -IC:\opencv\build\x86\vc12\..\..\include -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile -cudart static  -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MDd " -o Debug\funcHDR.cu.obj "C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\funcHDR.cu" 
      1>CUDACOMPILE : nvcc warning : The 'compute_20', 'sm_20', and 'sm_21' architectures are deprecated, and may be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
          funcHDR.cu
      1>Compilación del proyecto terminada "C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\P2\P2\P2.vcxproj" (CudaBuildCore destinos).
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\opencv\build\x86\vc12\..\..\include /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\loadSaveImage.cpp ..\..\main.cpp
-         main.cpp
-         loadSaveImage.cpp
-     1>c:\users\pablo\desktop\master\pgatr\p2\tone-alumnos\pgatr2\loadsaveimage.cpp(45): warning C4018: '<' : no coinciden signed/unsigned
-     1>c:\users\pablo\desktop\master\pgatr\p2\tone-alumnos\pgatr2\loadsaveimage.cpp(78): warning C4018: '<' : no coinciden signed/unsigned
-         Generando código...
-       Link:
+     1>Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\P2\Debug\P2.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\opencv\build\x86\vc12\lib /LIBPATH:"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\lib\Win32" cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib opencv_calib3d2413d.lib opencv_contrib2413d.lib opencv_core2413d.lib opencv_features2d2413d.lib opencv_flann2413d.lib opencv_gpu2413d.lib opencv_highgui2413d.lib opencv_imgproc2413d.lib opencv_legacy2413d.lib opencv_ml2413d.lib opencv_nonfree2413d.lib opencv_objdetect2413d.lib opencv_ocl2413d.lib opencv_photo2413d.lib opencv_stitching2413d.lib opencv_superres2413d.lib opencv_ts2413d.lib opencv_video2413d.lib opencv_videostab2413d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\P2\Debug\P2.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\P2\Debug\P2.lib" /MACHINE:X86 Debug\funcHDR.cu.obj
+         Debug\tonemapping.cu.obj
          Debug\loadSaveImage.obj
          Debug\main.obj
-     1>main.obj : error LNK2019: símbolo externo "void __cdecl preProcess(float * *,unsigned int * *,unsigned int *,unsigned int *,unsigned int *,class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &)" (?preProcess@@YAXPAPAMPAPAIPAI22ABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z) sin resolver al que se hace referencia en la función _main
-     1>main.obj : error LNK2019: símbolo externo "void __cdecl postProcess(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &,unsigned int,unsigned int,float,float)" (?postProcess@@YAXABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@IIMM@Z) sin resolver al que se hace referencia en la función _main
-     1>main.obj : error LNK2019: símbolo externo "void __cdecl cleanupGlobalMemory(void)" (?cleanupGlobalMemory@@YAXXZ) sin resolver al que se hace referencia en la función _main
-     1>C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\P2\Debug\P2.exe : fatal error LNK1120: 3 externos sin resolver
-     1>Compilación del proyecto terminada "C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\P2\P2\P2.vcxproj" (Build destinos) -- ERROR.
+         P2.vcxproj -> C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\P2\Debug\P2.exe
+       PostBuildEvent:
+         echo copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\cudart*.dll" "C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\P2\Debug\"
+         copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\cudart*.dll" "C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\P2\Debug\"
+         :VCEnd
+         copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\cudart*.dll" "C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\P2\Debug\"
+         C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\cudart32_80.dll
+         C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\cudart64_80.dll
+                 2 archivo(s) copiado(s).
+     1>Compilación del proyecto terminada "C:\Users\Pablo\Desktop\Master\PGATR\P2\tone-alumnos\PGATR2\P2\P2\P2.vcxproj" (Build destinos).
 
-ERROR al compilar.
+Compilación correcta.
 
-Tiempo transcurrido 00:00:13.13
+Tiempo transcurrido 00:00:03.76

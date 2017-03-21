@@ -49,6 +49,8 @@ __global__ void calculateMaxMin(const float* const d_logLuminance,
 	if (posThreadBlock == 0){
 		min_logLum = sharedMatm[0];
 		max_logLum = sharedMatM[0];
+		printf("Guardo el valor %f\n", d_logLuminance[thread_1D_pos]);
+
 	}
 
 }
@@ -71,4 +73,15 @@ void calculate_cdf(const float* const d_logLuminance,
 	de los valores de luminancia. Se debe almacenar en el puntero c_cdf
   */    
 
+	//TODO: Calcular tamaños de bloque
+	const dim3 blockSize(BLOCKSIZE, BLOCKSIZE, 1);
+	const dim3 gridSize((numCols / blockSize.x) + 1, (numRows / blockSize.y) + 1, 1);
+
+	//TODO: Lanzar kernel para separar imagenes RGBA en diferentes colores
+	calculateMaxMin << < gridSize, blockSize >> >(d_logLuminance, min_logLum, max_logLum, numRows, numCols);
+
+	printf("Minimo = %f\nMaximo = %f\n", min_logLum, max_logLum);
+
+	cudaDeviceSynchronize(); 
+	//checkCudaErrors(cudaGetLastError());
 }

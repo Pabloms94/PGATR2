@@ -5,6 +5,7 @@
 #include <iomanip>
 #include "loadSaveImage.h"
 #include <thrust/extrema.h>
+#include "device_launch_parameters.h"
 
 #define checkCudaErrors(val) check( (val), #val, __FILE__, __LINE__)
 
