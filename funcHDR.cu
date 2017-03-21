@@ -11,22 +11,11 @@
 __shared__ float sharedMatM[BLOCKSIZE * BLOCKSIZE];
 __shared__ float sharedMatm[BLOCKSIZE * BLOCKSIZE];
 
-void calculate_cdf(const float* const d_logLuminance,
-                                  unsigned int* const d_cdf,
-                                  float &min_logLum,
-                                  float &max_logLum,
-                                  const size_t numRows,
-                                  const size_t numCols,
-                                  const size_t numBins)
-{
-  /* TODO
-    1) Encontrar el valor máximo y mínimo de luminancia en min_logLum and max_logLum a partir del canal logLuminance 
-	2) Obtener el rango a representar
-	3) Generar un histograma de todos los valores del canal logLuminance usando la formula 
-	bin = (Lum [i] - lumMin) / lumRange * numBins
-	4) Realizar un exclusive scan en el histograma para obtener la distribución acumulada (cdf) 
-	de los valores de luminancia. Se debe almacenar en el puntero c_cdf
-  */    
+__global__ void calculateMaxMin(const float* const d_logLuminance,
+	float &min_logLum,
+	float &max_logLum,
+	const size_t numRows,
+	const size_t numCols){
 
 	//Conseguimos la posición del píxel en la imagen del que se ocupará el hilo
 	const int2 thread_2D_pos = make_int2(blockIdx.x * blockDim.x + threadIdx.x,
@@ -61,5 +50,25 @@ void calculate_cdf(const float* const d_logLuminance,
 		min_logLum = sharedMatm[0];
 		max_logLum = sharedMatM[0];
 	}
+
+}
+
+
+void calculate_cdf(const float* const d_logLuminance,
+                                  unsigned int* const d_cdf,
+                                  float &min_logLum,
+                                  float &max_logLum,
+                                  const size_t numRows,
+                                  const size_t numCols,
+                                  const size_t numBins)
+{
+  /* TODO
+    1) Encontrar el valor máximo y mínimo de luminancia en min_logLum and max_logLum a partir del canal logLuminance 
+	2) Obtener el rango a representar
+	3) Generar un histograma de todos los valores del canal logLuminance usando la formula 
+	bin = (Lum [i] - lumMin) / lumRange * numBins
+	4) Realizar un exclusive scan en el histograma para obtener la distribución acumulada (cdf) 
+	de los valores de luminancia. Se debe almacenar en el puntero c_cdf
+  */    
 
 }
