@@ -8,12 +8,24 @@
 
 #define BLOCKSIZE 32
 
+#define checkCudaErrors(val) check( (val), #val, __FILE__, __LINE__)
+
+template<typename T>
+void check(T err, const char* const func, const char* const file, const int line) {
+	if (err != cudaSuccess) {
+		std::cerr << "CUDA error at: " << file << ":" << line << std::endl;
+		std::cerr << cudaGetErrorString(err) << " " << func << std::endl;
+		system("pause");
+		exit(1);
+	}
+}
+
 __shared__ float sharedMatM[BLOCKSIZE * BLOCKSIZE];
 __shared__ float sharedMatm[BLOCKSIZE * BLOCKSIZE];
 
 __global__ void calculateMaxMin(const float* const d_logLuminance,
-	float &min_logLum,
-	float &max_logLum,
+	float *min_logLum,
+	float *max_logLum,
 	const size_t numRows,
 	const size_t numCols){
 
@@ -28,14 +40,20 @@ __global__ void calculateMaxMin(const float* const d_logLuminance,
 	if (thread_2D_pos.x >= numCols || thread_2D_pos.y >= numRows)
 		return;
 
+	//min_logLum = 2.0f;
+	//printf("MINIMO EN HILO %f\n", *min_logLum);
+
 	//Almacenamos en memoria compartida el valor correspondiente a cada thread
 	sharedMatM[posThreadBlock] = d_logLuminance[thread_1D_pos];
 	sharedMatm[posThreadBlock] = d_logLuminance[thread_1D_pos];
 
-	__syncthreads();
 
+	__syncthreads();
+	
+
+	//printf("NUMERO TOTAL ELEMENTOS %i, mi id %i\n", BLOCKSIZE * BLOCKSIZE, posThreadBlock);
 	//Ahora iteraremos sobre los elementos de memoria compartida para ir comparando y obtener el elemento menor y el mayor correspondientemente.
-	for (int i = BLOCKSIZE / 2; i > 0; i /= 2){
+	for (int i = BLOCKSIZE * BLOCKSIZE / 2; i > 0; i /= 2){
 		if (posThreadBlock < i){
 			if (sharedMatm[posThreadBlock] > sharedMatm[posThreadBlock + i])
 				sharedMatm[posThreadBlock] = sharedMatm[posThreadBlock + i];
@@ -46,13 +64,17 @@ __global__ void calculateMaxMin(const float* const d_logLuminance,
 		__syncthreads();
 	}
 
-	if (posThreadBlock == 0){
-		min_logLum = sharedMatm[0];
-		max_logLum = sharedMatM[0];
-		printf("Guardo el valor %f\n", d_logLuminance[thread_1D_pos]);
 
+	if (posThreadBlock == 0){
+		if (sharedMatm[0] < *min_logLum)
+			*min_logLum = sharedMatm[0];
+		if (sharedMatM[0] > *max_logLum)
+			*max_logLum = sharedMatM[0];
+		
+		//printf("Guardo el valor %f\n", d_logLuminance[thread_1D_pos]);
 	}
 
+	
 }
 
 
@@ -77,11 +99,25 @@ void calculate_cdf(const float* const d_logLuminance,
 	const dim3 blockSize(BLOCKSIZE, BLOCKSIZE, 1);
 	const dim3 gridSize((numCols / blockSize.x) + 1, (numRows / blockSize.y) + 1, 1);
 
-	//TODO: Lanzar kernel para separar imagenes RGBA en diferentes colores
-	calculateMaxMin << < gridSize, blockSize >> >(d_logLuminance, min_logLum, max_logLum, numRows, numCols);
+	float *myMin, *myMax;
 
+	cudaMalloc(&myMin, sizeof(float));
+	cudaMalloc(&myMax, sizeof(float));
+
+	cudaMemcpy(&myMin, &min_logLum, sizeof(float), cudaMemcpyHostToDevice);
+	cudaMemcpy(&myMax, &max_logLum, sizeof(float), cudaMemcpyHostToDevice);
+
+	printf("Minimo = %f\nMaximo = %f\n", *myMin, *myMax);
+
+	//TODO: Lanzar kernel para separar imagenes RGBA en diferentes colores
+	calculateMaxMin << < gridSize, blockSize >> >(d_logLuminance, myMin, myMax, numRows, numCols);
+
+	cudaMemcpy(&min_logLum, &myMin, sizeof(float), cudaMemcpyDeviceToHost);
+	cudaMemcpy(&max_logLum, &myMax, sizeof(float), cudaMemcpyDeviceToHost);
+
+	printf("Minimo = %f\nMaximo = %f\n", *myMin, *myMax);
 	printf("Minimo = %f\nMaximo = %f\n", min_logLum, max_logLum);
 
 	cudaDeviceSynchronize(); 
-	//checkCudaErrors(cudaGetLastError());
+	checkCudaErrors(cudaGetLastError());
 }

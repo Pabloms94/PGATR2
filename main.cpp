@@ -86,6 +86,8 @@ int main(int argc, char **argv) {
 
   cudaMemcpy(h_luminance, d_luminance, numRows*numCols*sizeof(float), cudaMemcpyDeviceToHost);
 
+  printf("Minimo = %f\nMaximo = %f\n", min_logLum, max_logLum);
+
   //check results and output the tone-mapped image
   postProcess(output_file, numRows, numCols, min_logLum, max_logLum);
 

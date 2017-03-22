@@ -14,6 +14,7 @@ void check(T err, const char* const func, const char* const file, const int line
   if (err != cudaSuccess) {
     std::cerr << "CUDA error at: " << file << ":" << line << std::endl;
     std::cerr << cudaGetErrorString(err) << " " << func << std::endl;
+	system("pause");
     exit(1);
   }
 }
