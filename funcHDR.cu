@@ -44,7 +44,7 @@ __global__ void calculateMin(const float* const d_logLuminance,
 
 	__syncthreads();
 	
-	//Ahora iteraremos sobre los elementos de memoria compartida para ir comparando y obtener el elemento menor y el mayor correspondientemente.
+	//Ahora iteraremos sobre los elementos de memoria compartida para ir comparando y obtener el elemento menor.
 	for (int i = BLOCKSIZE * BLOCKSIZE / 2; i > 0; i /= 2){
 		if (posThreadBlock < i){
 			if (sharedMatm[posThreadBlock] > sharedMatm[posThreadBlock + i])
@@ -55,7 +55,7 @@ __global__ void calculateMin(const float* const d_logLuminance,
 
 
 	if (posThreadBlock == 0){
-		if (sharedMatm[0] < *min_logLum)
+		if (sharedMatm[0] < min_logLum[blockIdx.x])
 			min_logLum[blockIdx.x] = sharedMatm[0];
 	}
 }
@@ -81,7 +81,7 @@ __global__ void calculateMax(const float* const d_logLuminance,
 
 	__syncthreads();
 
-	//Ahora iteraremos sobre los elementos de memoria compartida para ir comparando y obtener el elemento menor y el mayor correspondientemente.
+	//Ahora iteraremos sobre los elementos de memoria compartida para ir comparando y obtener el elemento mayor.
 	for (int i = BLOCKSIZE * BLOCKSIZE / 2; i > 0; i /= 2){
 		if (posThreadBlock < i){
 			if (sharedMatM[posThreadBlock] < sharedMatM[posThreadBlock + i])
@@ -92,8 +92,17 @@ __global__ void calculateMax(const float* const d_logLuminance,
 
 
 	if (posThreadBlock == 0){
-		if (sharedMatM[0] > *max_logLum)
+		if (sharedMatM[0] > max_logLum[blockIdx.x])
 			max_logLum[blockIdx.x] = sharedMatM[0];
+	}
+
+}
+
+__global__ void histograma(unsigned char *buffer, long size, unsigned int *histo){
+	int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (i < size){
+		bin = (Lum[i] - lumMin) / lumRange * numBins;
 	}
 
 }
@@ -115,6 +124,8 @@ void calculate_cdf(const float* const d_logLuminance,
 	de los valores de luminancia. Se debe almacenar en el puntero c_cdf
   */    
 
+	//MAXIMO:2.350199
+
 	//TODO: Calcular tamaños de bloque
 	const dim3 blockSize(BLOCKSIZE, BLOCKSIZE, 1);
 	dim3 gridSize((numCols / blockSize.x) + 1, (numRows / blockSize.y) + 1, 1);
@@ -132,14 +143,17 @@ void calculate_cdf(const float* const d_logLuminance,
 	calculateMin << < gridSize, blockSize >> >(d_logLuminance, myMin, numRows, numCols);
 	calculateMax << < gridSize, blockSize >> >(d_logLuminance, myMax, numRows, numCols);
 	
-	//TODO: Lanzar kernel para separar imagenes RGBA en diferentes colores
+	//Lanzamos kernels de manera iterativa hasta que solo quede un valor, el valor final.
 	for (int i = numBloques; i > 1; i /= BLOCKSIZE * BLOCKSIZE){
 		dim3 newGridSize((sqrt(numBloques) / blockSize.x) + 1, (sqrt(numBloques) / blockSize.y) + 1, 1);
 		calculateMin << < newGridSize, blockSize >> >(myMin, myMin, sqrt(numBloques) + 1, sqrt(numBloques) + 1);
 		calculateMax << < newGridSize, blockSize >> >(myMax, myMax, sqrt(numBloques) + 1, sqrt(numBloques) + 1);
 		numBloques /= (BLOCKSIZE * BLOCKSIZE);
 	}
-		
+	
+	//Lanzamos el kernel para la creación de histogramas.
+
+
 
 	cudaMemcpy(&min_logLum, myMin, sizeof(float), cudaMemcpyDeviceToHost);
 	cudaMemcpy(&max_logLum, myMax, sizeof(float), cudaMemcpyDeviceToHost);
