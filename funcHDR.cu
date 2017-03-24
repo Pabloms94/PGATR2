@@ -98,13 +98,28 @@ __global__ void calculateMax(const float* const d_logLuminance,
 
 }
 
-__global__ void histograma(unsigned char *buffer, long size, unsigned int *histo){
-	int i = blockIdx.x * blockDim.x + threadIdx.x;
+__global__ void histograma(const float* const d_logLuminance, 
+	float min_logLum,
+	float max_logLum, 
+	const size_t numRows,
+	const size_t numCols,
+	const size_t numBins, 
+	int *histo){
 
-	if (i < size){
-		bin = (Lum[i] - lumMin) / lumRange * numBins;
-	}
+	//Conseguimos la posición del píxel en la imagen del que se ocupará el hilo
+	const int2 thread_2D_pos = make_int2(blockIdx.x * blockDim.x + threadIdx.x,
+		blockIdx.y * blockDim.y + threadIdx.y);
+	const int thread_1D_pos = thread_2D_pos.y * numCols + thread_2D_pos.x;
+	//Calculamos la posición del hilo en el bloque
+	const int posThreadBlock = threadIdx.x * BLOCKSIZE + threadIdx.y;
 
+	//Si estamos fuera de los límites de la imagen, paramos
+	if (thread_2D_pos.x >= numCols || thread_2D_pos.y >= numRows)
+		return;
+	
+	int bin = (int) ((d_logLuminance[posThreadBlock] - min_logLum) / (fabs(max_logLum - min_logLum)) * numBins);
+	atomicAdd(&histo[bin], 1);
+	printf("Valor %d es %d\n", bin, histo[bin]);
 }
 
 void calculate_cdf(const float* const d_logLuminance,
@@ -151,10 +166,17 @@ void calculate_cdf(const float* const d_logLuminance,
 		numBloques /= (BLOCKSIZE * BLOCKSIZE);
 	}
 	
+	int *myHisto;
+	cudaMalloc((int **)&myHisto, sizeof(int) * numBins);
+	cudaMemset(myHisto, 0, sizeof(int) * numBins);
+
 	//Lanzamos el kernel para la creación de histogramas.
+	histograma << < gridSize, blockSize >> >(d_logLuminance, myMin[0], myMax[0], numRows, numCols, numBins, myHisto);
 
-
-
+	/*for (int i = 0; i < numBins; i++)
+		if (myHisto[i] != 0)
+			printf("Valor %i es %i\n", i, myHisto[i]);
+*/
 	cudaMemcpy(&min_logLum, myMin, sizeof(float), cudaMemcpyDeviceToHost);
 	cudaMemcpy(&max_logLum, myMax, sizeof(float), cudaMemcpyDeviceToHost);
 
