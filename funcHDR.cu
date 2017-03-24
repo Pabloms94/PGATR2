@@ -128,18 +128,19 @@ __global__ void histograma(const float* const d_logLuminance,
 
 __global__ void exclusiveScan(unsigned int *histo, const size_t numBins){
 
-	__shared__ int tempArray[BLOCKSIZE * BLOCKSIZE * 2];
+	__shared__ int tempArray[BLOCKSIZE * BLOCKSIZE];
 
 	int id = blockIdx.x * blockDim.x + threadIdx.x;
 	int threadId = threadIdx.x;
 	int offset = 1, temp;
 	int ai = threadId;
 	int bi = threadId + numBins / 2;
-
-	//printf("ID Thread1: %d\n", histo[id + numBins / 2]);
 	
 	tempArray[ai] = histo[id];
 	tempArray[bi] = histo[id + numBins / 2];
+
+	//if (id>0 && id<100)
+	//	printf("ID:%d Histograma: %u\n", (id + numBins / 2), histo[id + numBins / 2]);
 	//printf("ID Thread2: %d\n", id);
 	for (int i = numBins >> 1; i > 0; i >>= 1){
 		__syncthreads();
@@ -147,13 +148,16 @@ __global__ void exclusiveScan(unsigned int *histo, const size_t numBins){
 			ai = offset * (2 * threadId + 1) - 1;
 			bi = offset * (2 * threadId + 2) - 1;
 			tempArray[bi] += tempArray[ai];
+			printf("ID Thread2: %d\n", tempArray[bi]);
 		}
 		offset <<= 1;
 	}
 	
-	if (threadId == 0)
+
+	if (threadId == 0){
 		tempArray[numBins - 1] = 0;
-//printf("ID Thread3: %d\n", id);
+	}
+
 	for (int i = 1; i < numBins; i <<= 1){
 		offset >>= 1;
 		__syncthreads();
@@ -166,12 +170,14 @@ __global__ void exclusiveScan(unsigned int *histo, const size_t numBins){
 		}
 	}
 	
+	//if (id>0 && id<100)
+		//printf("ID REAL: %u ID:%d Histograma: %u\n",id, (id + numBins / 2), histo[id + numBins / 2]);
 
 	__syncthreads();
 
-	histo[id] = tempArray[threadId];
-	histo[id + numBins / 2] = tempArray[threadId + numBins / 2];//printf("ID Thread4: %d\n", id);
-	printf("ID Thread3: %d\n", histo[id]);
+	//histo[id] = tempArray[threadId];
+	//histo[id + numBins / 2] = tempArray[threadId + numBins / 2];//printf("ID Thread4: %d\n", id);
+	
 
 }
 
@@ -225,22 +231,29 @@ void calculate_cdf(const float* const d_logLuminance,
 	//printf("MIN %f Y MAX %f\n", min_logLum, max_logLum);
 
 	unsigned int *myHisto;
+	unsigned int *hostHisto = new unsigned int[numBins];
+	
 	cudaMalloc((int **)&myHisto, sizeof(unsigned int) * numBins);
+	//cudaMalloc((int **)&hostHisto, sizeof(unsigned int) * numBins);
 	cudaMemset(myHisto, 0, sizeof(unsigned int) * numBins);
 
 	//Lanzamos el kernel para la creación de histogramas.
 	histograma << < gridSize, blockSize >> >(d_logLuminance, min_logLum, max_logLum, numRows, numCols, numBins, myHisto);
 
-	/*for (int i = 0; i < numBins; i++)
-		if (myHisto[i] != 0)
-			printf("Valor %i es %i\n", i, myHisto[i]);
-*/
 	/*cudaMemcpy(&min_logLum, myMin, sizeof(float), cudaMemcpyDeviceToHost);
 	cudaMemcpy(&max_logLum, myMax, sizeof(float), cudaMemcpyDeviceToHost);*/
 
+	//cudaMalloc((unsigned int **)&hostHisto, sizeof(unsigned int) * numBins);
+	cudaMemcpy(hostHisto, myHisto, sizeof(unsigned int) * numBins, cudaMemcpyDeviceToHost);
+
+	//for (unsigned int i = 0; i < numBins; i++)
+	//{
+	//	printf("id: %d  value: %u\n", i, hostHisto[i]);
+	//}
+
 	exclusiveScan << < gridSize, blockSize >> >(myHisto, numBins);
 
-	cudaMemcpy(d_cdf, myHisto, sizeof(unsigned int) * numBins, cudaMemcpyDeviceToHost);
+	//cudaMemcpy(d_cdf, myHisto, sizeof(unsigned int) * numBins, cudaMemcpyDeviceToHost);
 
 	cudaDeviceSynchronize(); 
 	checkCudaErrors(cudaGetLastError());
